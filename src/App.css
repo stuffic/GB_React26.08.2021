@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.My-style {
+  color: royalblue;
+  font-size: 30px;
+}
+
+.My-style-div{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
