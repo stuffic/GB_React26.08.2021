@@ -1,10 +1,11 @@
 import React from 'react';
 import '../App.css';
 
-export const MessageText = ({SomeText}) => {
+export const MessageText = ({someText, id}) => {
+   
     return (        
-        <div className="My-style-div">
-            <h3 className="My-style">Made new App with React by {SomeText}</h3>
+        <div>            
+            <h3 className="message" >{someText}</h3>            
         </div>
     )
 }
