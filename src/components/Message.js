@@ -1,9 +1,8 @@
 import React from 'react';
-import '../App.css';
-import ListItem from '@material-ui/core/ListItem';
 import Grid from '@material-ui/core/Grid';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import '../App.css';
 export const MessageText = ({ someText, id }) => {
 
     return (
