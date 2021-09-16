@@ -25,9 +25,6 @@ function Chats(props) {
 
     const { chatId } = useParams();
 
-    console.log(chatId);
-    console.log('huy');
-
     const initialMes = {
         "chat-1": [{ text: "nnnn", author: "HUMAN", id: "mess-1" }],
         "chat-2": [],
@@ -44,7 +41,6 @@ function Chats(props) {
     const [arrMessages, setArrMessages] = useState(initialMes);
     console.log(initialMes);
     const [chats, setChats] = useState(initialChats);
-
     
 
     const sendMessage = useCallback(
