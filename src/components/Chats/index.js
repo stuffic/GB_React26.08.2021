@@ -1,110 +1,76 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { makeStyles } from '@material-ui/core/styles';
+import { useCallback, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router';
+import { useSelector, useDispatch } from 'react-redux';
+import { Redirect } from 'react-router';
+
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import { Redirect } from 'react-router';
+import { List, ListItem, Divider } from '@material-ui/core';
 
 import { MessageText } from '../Message';
 import { ChatList } from '../ChatList';
 import { Form } from '../Form';
-
-const answers = ["Я бот",
-    "Как дела?",
-    "Я ничего не умею",
-    "Мне скучно. Поговори со мной",
-    "Hello world",
-    "My name is Bot"]
-
+import { addChat, deleteChat } from '../../store/chats/actions';
+import { addMessage } from '../../store/messages/actions';
+import { AUTHORS, useStyles, answers } from '../../utils/constants';
 
 function Chats(props) {
 
     const { chatId } = useParams();
+    const history = useHistory();
 
-    const initialMes = {
-        "chat-1": [{ text: "nnnn", author: "HUMAN", id: "mess-1" }],
-        "chat-2": [],
-        "chat-3": [],
-    };
-
-    const initialChats = [
-        { name: "Bot", id: 1 },
-        { name: "Best friend", id: 2 },
-        { name: "New friend", id: 3 }
-    ];
-
-    console.log(initialChats);
-    const [arrMessages, setArrMessages] = useState(initialMes);
-    console.log(initialMes);
-    const [chats, setChats] = useState(initialChats);
-    
+    const dispatch = useDispatch();
+    const arrMessages = useSelector(state => state.messages.messages);
+    const chats = useSelector(state => state.chats.chats);
 
     const sendMessage = useCallback(
-        (message) => {
-            setArrMessages((prevMess) => ({
-                ...prevMess,
-                [chatId]: [...prevMess[chatId], message],
-            }));
+        (text, author) => {
+            dispatch(addMessage(chatId, text, author))
         },
         [chatId]
     );
+
     useEffect(() => {
         let timeout;
 
-        if (!!chatId && arrMessages[chatId]!==undefined && arrMessages[chatId][arrMessages[chatId].length - 1]?.author === "I") {
+        if (!!chatId && arrMessages[chatId] !== undefined && arrMessages[chatId][arrMessages[chatId].length - 1]?.author === "I") {
             timeout = setTimeout(() => {
-                sendMessage({
-                    text: answers[Math.floor(answers.length * Math.random())],
-                    author: "bot",
-                    id: `mess-${Date.now()}`,
-                });
+                sendMessage(answers[Math.floor(answers.length * Math.random())], AUTHORS.BOT);
             }, 1500);
-
         }
-
         return () => clearTimeout(timeout);
     }, [arrMessages]);
 
     const handleAddMessage = useCallback(
         (text) => {
-            sendMessage({
-                text,
-                author: "I",
-                id: `mess-${Date.now()}`,
-            });
-            console.log(text);
+            sendMessage(text, AUTHORS.HUMAN);
         },
-        [chatId, sendMessage]
+        [sendMessage]
     );
 
+    const handleAddChat = useCallback(
+        (name) => {
+            dispatch(addChat(name));
+        }, [dispatch]
+    );
 
-    const useStyles = makeStyles({
-        table: {
-            minWidth: 650,
+    const handleDeleteChat = useCallback(
+        (id) => {
+            dispatch(deleteChat(id));
+            if (chatId !== id) {
+                return;
+            }
+            if (chats.length === 1) {
+                history.push(`/chats/${chats[0].id}`);
+            } else {
+                history.push(`/chats`);
+            }
         },
-        chatSection: {
-            width: '100%',
-            height: '80vh'
-        },
+        [chatId, dispatch, chats, history]
+    );
 
-        borderRight500: {
-            borderRight: '1px solid #e0e0e0'
-        },
-        messageArea: {
-            height: '70vh',
-            overflowY: 'auto'
-        }
-    });
-
-    console.log(chatId !== undefined);
-    console.log(arrMessages[chatId] === undefined);
-
-    if (chatId !== undefined && arrMessages[chatId] === undefined) {
-        console.log(chats);
+    if (chats.find((chat) => chat.id === chatId) === undefined) {
         return <Redirect to="/nochat" />;
     }
 
@@ -119,14 +85,13 @@ function Chats(props) {
                 <div >
                     <Grid container component={Paper} className={useStyles.chatSection}>
                         <Grid item xs={3} className={useStyles.borderRight500}>
-                            <ChatList chats={chats} />
+                            <ChatList chats={chats} onAddChat={handleAddChat} onDeleteChat={handleDeleteChat} />
                         </Grid>
                         <Grid item xs={9}>
                             <List className={useStyles.messageArea} key={"list-mess"}>
-                               
-                                {!!chatId &&(
+                                {!!chatId && (
                                     <>
-                                        {arrMessages[chatId].map((message) => <ListItem key={`list-item-${message.id}`}> <MessageText key={message.id} someText={message.text} id={message.id} /></ListItem>)}
+                                        {(arrMessages[chatId] || []).map((message) => <ListItem key={`list-item-${message.id}`}> <MessageText key={message.id} someText={message.text} id={message.id} /></ListItem>)}
                                     </>
                                 )}
                             </List>
@@ -134,7 +99,6 @@ function Chats(props) {
                             <Form onSubmit={handleAddMessage}></Form>
                         </Grid>
                     </Grid>
-
                 </div>
             </div>
         </div >

@@ -19,27 +19,20 @@ export const Form = ({ onSubmit }) => {
         inputRef.current.focus();
     };
 
-    console.log(inputRef);
-
     return (
-        
-            <Grid  style={{ padding: '20px' }} item xs={12}>
-            <form  onSubmit={handleSubmit}>
+
+        <Grid style={{ padding: '20px' }} item xs={12}>
+            <form onSubmit={handleSubmit}>
                 <div>
-                <Grid item xs={12}>
-                    <TextField label="Наберите ваше сообщение" fullWidth value={value} onChange={handleChange} inputRef={inputRef} />
-                </Grid>
-                <Grid item xs={12} align="right">
-                    <Button type="submit" color="primary"> <SendIcon />
-                        {(text) => (
-                            <>                                
-                            </>
-                        )}
-                    </Button>
+                    <Grid item xs={12}>
+                        <TextField label="Наберите ваше сообщение" fullWidth value={value} onChange={handleChange} inputRef={inputRef} />
+                    </Grid>
+                    <Grid item xs={12} align="right">
+                        <Button type="submit" color="primary"> <SendIcon />
+                        </Button>
                     </Grid>
                 </div>
             </form>
-            </Grid>           
-        
+        </Grid>
     );
 };

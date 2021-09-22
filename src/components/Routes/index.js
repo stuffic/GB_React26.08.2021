@@ -16,7 +16,7 @@ export const Routes = () => {
                 <Route path="/chats/:chatId?" component={Chats}>
                 </Route>
                 <Route path="/profile">
-                    <Profile/>                    
+                    <Profile />
                 </Route>
                 <Route path="/nochat">
                     <NoChat />

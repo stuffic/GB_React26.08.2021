@@ -1,17 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { List, ListItem, ListItemIcon, Avatar} from "@material-ui/core";
+import React, { useState } from "react";
+import { List, Button } from "@material-ui/core";
 
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 
-export const ChatList = ({chats}) => {return (
-    <List>    
-    {chats.map((chat) =>(                            
-    <ListItem button key={chat.id}>                                
-        <ListItemIcon>
-            <Avatar alt="Bot" src="https://image.flaticon.com/icons/png/512/2301/2301361.png" />
-        </ListItemIcon>
-        <Link to={`/chats/chat-${chat.id}`}>{chat.name}</Link>
-    </ListItem> ))}                                                            
-    </List>
-);
+import { ChatItem } from "../ChatItem";
+
+export const ChatList = ({ chats, onAddChat, onDeleteChat }) => {
+    const [value, setValue] = useState('');
+
+    const handleChange = (e) => {
+        setValue(e.target.value);
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onAddChat(value);
+        setValue('');
+    }
+
+    return (
+        <List>
+            <form onSubmit={handleSubmit}>
+                <input type="text" value={value} onChange={handleChange} />
+                <Button type="submit" disabled={!value} color="primary"><AddIcon />
+                </Button>
+            </form>
+            {chats.map((chat) => (
+                <ChatItem chat={chat} key={chat.id} id={chat.id} onDelete={onDeleteChat}>
+                </ChatItem>))}
+        </List>
+    );
 };
