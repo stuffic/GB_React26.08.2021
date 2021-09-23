@@ -1,7 +1,6 @@
-import { useCallback, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useCallback } from 'react';
+import { useParams, Redirect } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { Redirect } from 'react-router';
 
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -9,16 +8,15 @@ import Typography from '@material-ui/core/Typography';
 import { List, ListItem, Divider } from '@material-ui/core';
 
 import { MessageText } from '../Message';
-import { ChatList } from '../ChatList';
 import { Form } from '../Form';
-import { addChat, deleteChat } from '../../store/chats/actions';
-import { addMessage } from '../../store/messages/actions';
-import { AUTHORS, useStyles, answers } from '../../utils/constants';
+import { addMessageWithReply } from '../../store/messages/actions';
+import { AUTHORS, useStyles } from '../../utils/constants';
+import { ChatListContainer } from '../ChatList/ChatListContainer';
+
 
 function Chats(props) {
 
     const { chatId } = useParams();
-    const history = useHistory();
 
     const dispatch = useDispatch();
     const arrMessages = useSelector(state => state.messages.messages);
@@ -26,48 +24,16 @@ function Chats(props) {
 
     const sendMessage = useCallback(
         (text, author) => {
-            dispatch(addMessage(chatId, text, author))
+            dispatch(addMessageWithReply(chatId, text, author))
         },
-        [chatId]
+        [chatId, dispatch]
     );
-
-    useEffect(() => {
-        let timeout;
-
-        if (!!chatId && arrMessages[chatId] !== undefined && arrMessages[chatId][arrMessages[chatId].length - 1]?.author === "I") {
-            timeout = setTimeout(() => {
-                sendMessage(answers[Math.floor(answers.length * Math.random())], AUTHORS.BOT);
-            }, 1500);
-        }
-        return () => clearTimeout(timeout);
-    }, [arrMessages]);
 
     const handleAddMessage = useCallback(
         (text) => {
             sendMessage(text, AUTHORS.HUMAN);
         },
         [sendMessage]
-    );
-
-    const handleAddChat = useCallback(
-        (name) => {
-            dispatch(addChat(name));
-        }, [dispatch]
-    );
-
-    const handleDeleteChat = useCallback(
-        (id) => {
-            dispatch(deleteChat(id));
-            if (chatId !== id) {
-                return;
-            }
-            if (chats.length === 1) {
-                history.push(`/chats/${chats[0].id}`);
-            } else {
-                history.push(`/chats`);
-            }
-        },
-        [chatId, dispatch, chats, history]
     );
 
     if (chats.find((chat) => chat.id === chatId) === undefined) {
@@ -85,7 +51,7 @@ function Chats(props) {
                 <div >
                     <Grid container component={Paper} className={useStyles.chatSection}>
                         <Grid item xs={3} className={useStyles.borderRight500}>
-                            <ChatList chats={chats} onAddChat={handleAddChat} onDeleteChat={handleDeleteChat} />
+                            <ChatListContainer />
                         </Grid>
                         <Grid item xs={9}>
                             <List className={useStyles.messageArea} key={"list-mess"}>
