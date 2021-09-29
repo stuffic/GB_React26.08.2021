@@ -7,5 +7,7 @@ export const MainPage = () => {
         <Link to="/profile">Профиль</Link>
         <br></br>
         <Link to="/chats/chat-1">Список чатов</Link>
+        <br></br>
+        <Link to="/cats">Котики</Link>
     </div>
 }

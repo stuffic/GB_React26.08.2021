@@ -33,3 +33,12 @@ export const useStyles = makeStyles({
         justifyContent: 'center',
     }
 });
+
+export const REQUEST_STATUS = {
+    IDLE: 'idle',
+    PENDING: 'pending',
+    SUCCESS: 'success',
+    FAILURE: 'failure'
+}
+
+export const PUBLIC_URL = "https://cataas.com/api/cats?tags=cute&limit=12";
