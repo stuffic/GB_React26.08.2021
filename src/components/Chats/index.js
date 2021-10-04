@@ -1,45 +1,51 @@
 import { useCallback } from 'react';
-import { useParams, Redirect } from 'react-router';
+import { useParams} from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { List, ListItem, Divider } from '@material-ui/core';
+import { useMemo } from 'react';
 
 import { MessageText } from '../Message';
 import { Form } from '../Form';
-import { addMessageWithReply } from '../../store/messages/actions';
+import { addMessageFb, initMessages } from '../../store/messages/actions';
 import { AUTHORS, useStyles } from '../../utils/constants';
 import { ChatListContainer } from '../ChatList/ChatListContainer';
+import { initChats } from '../../store/chats/actions';
+import { selectIfChatExists } from '../../store/chats/selectors';
 
 
 function Chats(props) {
 
     const { chatId } = useParams();
-
     const dispatch = useDispatch();
-    const arrMessages = useSelector(state => state.messages.messages);
-    const chats = useSelector(state => state.chats.chats);
+   
+    const messages = useSelector(state => state.messages.messages);
+    const selectChatExists = useMemo(() => selectIfChatExists(chatId), [chatId]);
+    const chatExists = useSelector(selectChatExists);
+
+    useEffect(() => {
+        dispatch(initChats());
+        dispatch(initMessages());
+      }, []);
 
     const sendMessage = useCallback(
-        (text, author) => {
-            dispatch(addMessageWithReply(chatId, text, author))
+        (text, author) => {            
+            dispatch(addMessageFb(text, author, chatId))
         },
-        [chatId, dispatch]
+        [chatId]
     );
 
     const handleAddMessage = useCallback(
         (text) => {
-            sendMessage(text, AUTHORS.HUMAN);
+            sendMessage(text, AUTHORS.HUMAN);            
         },
         [sendMessage]
-    );
+    );    
 
-    if (chats.find((chat) => chat.id === chatId) === undefined) {
-        return <Redirect to="/nochat" />;
-    }
-
+    console.log(messages);
     return (
         <div className="App">
             <div>
@@ -55,9 +61,9 @@ function Chats(props) {
                         </Grid>
                         <Grid item xs={9}>
                             <List className={useStyles.messageArea} key={"list-mess"}>
-                                {!!chatId && (
+                                {!!chatId &&  chatExists && (
                                     <>
-                                        {(arrMessages[chatId] || []).map((message) => <ListItem key={`list-item-${message.id}`}> <MessageText key={message.id} someText={message.text} id={message.id} /></ListItem>)}
+                                        {(Object.values(messages[chatId]|| {} )|| {}).map((message) => <ListItem key={`list-item-${message.id}`}> <MessageText key={message.id} someText={message.text} id={message.id} /></ListItem>)}
                                     </>
                                 )}
                             </List>
