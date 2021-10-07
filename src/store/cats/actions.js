@@ -4,7 +4,7 @@ export const GET_PICS_PENDING = "CATS::GET_PENDING";
 export const GET_PICS_SUCCESS = "CATS::GET_SUCCESS";
 export const GET_PICS_FAILURE = "CATS::GET_FAILURE";
 
-const getPicsPending = () => ({
+export const getPicsPending = () => ({
     type: GET_PICS_PENDING,
 });
 

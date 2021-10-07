@@ -7,7 +7,7 @@ import { ChatList } from "./ChatListView";
 
 export const ChatListContainer = () => {
 
-    const chats = useSelector(selectChats);
+    export const chats = useSelector(selectChats);
     const dispatch = useDispatch();
     const [value, setValue] = useState('');
 

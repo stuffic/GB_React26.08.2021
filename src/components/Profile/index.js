@@ -43,6 +43,6 @@ export const Profile = ({ onLogout }) => {
             <button type="submit">Submit</button>
         </form>
         <div>{name}</div>
-        <button onClick={handleClick}>Logout</button>
+        <button title="logout" onClick={handleClick}>Logout</button>
     </div>
 }
